@@ -1,9 +1,13 @@
+import { useTranslation } from 'react-i18next'
+
 import ChiffreAffairesActivitéMixte from '@/components/ChiffreAffairesActivitéMixte'
 import { Condition } from '@/components/EngineValue/Condition'
 import { SimulationGoal, SimulationGoals } from '@/components/Simulation'
 import { CessationActivitéToggles } from '@/pages/simulateurs/cessation-activité/Toggles'
 
 export const CessationActivitéGoals = () => {
+	const { t } = useTranslation()
+
 	return (
 		<SimulationGoals
 			legend="Vos revenus d’activité l’année de cessation"
@@ -14,6 +18,7 @@ export const CessationActivitéGoals = () => {
 					<SimulationGoal
 						appear={false}
 						dottedName="entreprise . chiffre d'affaires"
+						label={t("Chiffre d'affaires pour l'année de cessation")}
 					/>
 				</Condition>
 				<Condition expression="entreprise . imposition . régime . micro-entreprise">
@@ -31,6 +36,7 @@ export const CessationActivitéGoals = () => {
 				<SimulationGoal
 					appear={false}
 					dottedName="dirigeant . rémunération . totale"
+					label={t("Rémunération totale pour l'année de cessation")}
 				/>
 			</Condition>
 
@@ -38,7 +44,9 @@ export const CessationActivitéGoals = () => {
 				small
 				editable={false}
 				dottedName="dirigeant . indépendant . cotisations et contributions"
-				label={"Total des cotisations à devoir après cessation d'activité"}
+				label={
+					"Total des cotisations à devoir pour l'année de cessation d'activité"
+				}
 			/>
 			<Condition expression="entreprise . imposition . régime . micro-entreprise">
 				<SimulationGoal

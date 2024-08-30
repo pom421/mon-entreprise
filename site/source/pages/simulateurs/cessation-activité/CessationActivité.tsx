@@ -34,10 +34,13 @@ export const CessationActivitéSimulation = () => {
 		<Simulation
 			customSimulationbutton={{
 				href: lien,
-				title: t('Calculer vos cotisations pour l’année précédente'),
+				title: t('Vos cotisations pour l’année précédente'),
 			}}
 		>
-			<SimulateurWarning simulateur="cessation-activité" />
+			<SimulateurWarning
+				simulateur="cessation-activité"
+				informationsComplémentaires={<>Warning</>}
+			/>
 			<CessationActivitéGoals />
 		</Simulation>
 	)

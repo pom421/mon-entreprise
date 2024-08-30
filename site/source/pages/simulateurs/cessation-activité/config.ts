@@ -11,7 +11,7 @@ export function cessationActivitéConfig({
 	return config({
 		id: 'cessation-activité',
 		tracking: 'cessation_activité',
-		icône: '🛑',
+		icône: '📦',
 		iframePath: 'simulateur-cessation-activité',
 		pathId: 'simulateurs.cessation-activité',
 		shortName: t(
@@ -20,24 +20,24 @@ export function cessationActivitéConfig({
 		),
 		title: t(
 			'pages.simulateurs.cessation-activité.title',
-			'Estimations de cotisations à devoir après cessation'
+			"Indépendants : Cotisations pour l'année de cessation"
 		),
 		meta: {
 			description: t(
 				'pages.simulateurs.cessation-activité.meta.description',
-				'Calculez vos cotisations à payer lors de la cessation de votre activité en tant qu’indépendant'
+				"Estimez vos cotisations de l'année de cessation de votre activité en tant qu’indépendant."
 			),
 			ogDescription: t(
 				'pages.simulateurs.cessation-activité.meta.ogDescription',
-				'Calculez vos cotisations à payer lors de la cessation de votre activité en tant qu’indépendant'
+				"Estimez vos cotisations de l'année de cessation de votre activité en tant qu’indépendant."
 			),
 			ogTitle: t(
 				'pages.simulateurs.cessation-activité.meta.ogTitle',
-				'Calculez vos cotisations à payer lors de la cessation de votre activité en tant qu’indépendant'
+				"Indépendants : Cotisations pour l'année de cessation"
 			),
 			title: t(
 				'pages.simulateurs.cessation-activité.meta.titre',
-				'Indépendants : Estimations de cotisations à devoir après cessation'
+				"Indépendants : Cotisations pour l'année de cessation"
 			),
 		},
 		nextSteps: ['indépendant'],

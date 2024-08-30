@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux'
 
+import { DefaultValue } from '@/components/conversation/DefaultValue'
 import { ExplicableRule } from '@/components/conversation/Explicable'
 import RuleInput from '@/components/conversation/RuleInput'
 import { useEngine } from '@/components/utils/EngineContext'
@@ -42,6 +43,7 @@ export const CessationActivitéToggles = () => {
 						dispatch(updateSituation('entreprise . date de radiation', date))
 					}}
 				/>
+				<DefaultValue dottedName={'entreprise . date de radiation'} />
 			</div>
 
 			<RuleInput

@@ -11,6 +11,7 @@ export default meta
 export {
 	ArrowRightIcon,
 	CarretDownIcon,
+	CarretUpIcon,
 	CheckmarkIcon,
 	ChevronIcon,
 	CircledArrowIcon,

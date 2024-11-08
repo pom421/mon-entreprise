@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import './smarttag.js'
+import * as pa from './piano-analytics.js'
 
 // Ci-dessous les indicateurs personnalisés de site et de page
-// https://developers.atinternet-solutions.com/javascript-fr/contenus-javascript-fr/indicateurs-de-site-et-de-page-javascript-fr/
+// https://developers.atinternet-solutions.com/as2-tagging-fr/javascript-fr/contenus-javascript-fr/indicateurs-de-site-et-de-page-javascript-fr/index.html
 export const INDICATOR = {
 	SITE: {
 		LANGAGE: 1,
@@ -23,83 +23,88 @@ type ClickHit = {
 	click_chapter1?: string
 	click_chapter2?: string
 	click_chapter3?: string
+	evenement_type?: 'telechargement'
 }
 
 export interface ATTracker {
-	setProp(prop: 'env_language', value: 'fr' | 'en', persistant: true): void
-	setProp(prop: 'n:simulateur_embarque', value: 1 | 0, persistant: true): void
-	setProp(
-		prop: 'evenement_type',
-		value: 'telechargement',
-		persistant: false
+	setProperties(
+		propertiesObject: {
+			env_language: 'fr' | 'en'
+			'n:simulateur_embarque': 1 | 0
+		},
+		options: {
+			persistent: true
+		}
 	): void
 
-	events: {
-		send(type: 'page.display', data: PageHit): void
-		send(
-			type:
-				| 'demarche.document'
-				| 'click.action'
-				| 'click.navigation'
-				| 'click.download'
-				| 'click.exit',
-			data: ClickHit & PageHit
-		): void
-	}
+	sendEvent(type: 'page.display', data: PageHit): void
+	sendEvent(
+		type:
+			| 'demarche.document'
+			| 'click.action'
+			| 'click.navigation'
+			| 'click.download'
+			| 'click.exit',
+		data: ClickHit & PageHit
+	): void
 
-	privacy: {
-		setVisitorMode(authority: 'cnil', type: 'exempt'): void
-		setVisitorOptout(): void
-		getVisitorMode(): { name: 'exempt' | 'optout' }
+	consent: {
+		setMode(type: 'exempt' | 'optout'): void
+		getMode(): { name: 'exempt' | 'optout' }
 	}
 }
 
 type ATTrackerClass = { new (options: { site: number }): ATTracker }
 
-declare global {
-	const ATInternet: {
-		Tracker: { Tag: ATTrackerClass }
-	}
-}
+export const pianoAnalytics = pa as ATTrackerClass
 
 export function createTracker(siteId?: string, doNotTrack = false) {
 	const site = siteId ? +siteId : 0
+
 	if (Number.isNaN(site)) {
 		throw new Error('expect string siteId to be of number form')
 	}
+
 	const BaseTracker: ATTrackerClass =
-		siteId && !import.meta.env.SSR ? ATInternet?.Tracker.Tag : Log
+		siteId && !import.meta.env.SSR ? pianoAnalytics : Log
 
 	class Tag extends BaseTracker implements ATTracker {
-		#send: ATTracker['events']['send']
+		#sendEvent: ATTracker['sendEvent']
 
 		constructor(options: { language: 'fr' | 'en' }) {
 			super({ site })
-			this.#send = this.events.send.bind(this)
-			this.events.send = (type, data) => {
+			this.#sendEvent = this.sendEvent.bind(this)
+			this.sendEvent = (type, data) => {
 				if (type === 'page.display') {
 					this.#currentPageInfo = data
-					this.#send(type, data)
+					this.#sendEvent(type, data)
 
 					return
 				}
 				if (!('click' in data)) {
 					throw new Error('invalid argument error')
 				}
-				this.#send(type, { ...this.#currentPageInfo, ...data })
+				this.#sendEvent(type, { ...this.#currentPageInfo, ...data })
 			}
 
-			this.setProp('env_language', options.language, true)
-			this.setProp(
-				'n:simulateur_embarque',
-				document.location.pathname.includes('/iframes/') ? 1 : 0,
-				true
+			this.setProperties(
+				{
+					env_language: options.language,
+					'n:simulateur_embarque': document.location.pathname.includes(
+						'/iframes/'
+					)
+						? 1
+						: 0,
+				},
+				{
+					persistent: true,
+				}
 			)
 
 			if (import.meta.env.MODE === 'production' && doNotTrack) {
-				this.privacy.setVisitorOptout()
+				this.consent.setMode('optout')
 			} else {
-				this.privacy.setVisitorMode('cnil', 'exempt')
+				this.consent.setMode('exempt')
 			}
 		}
 
@@ -114,31 +119,33 @@ export class Log implements ATTracker {
 		console.debug('ATTracker::new', options)
 	}
 
-	setProp(name: string, value: unknown, persistent: boolean): void {
-		console.debug('ATTracker::setProp', { name, value, persistent })
+	setProperties(
+		propertiesObject: {
+			env_language: string
+			'n:simulateur_embarque': number
+		},
+		options: {
+			persistent: true
+		}
+	) {
+		console.debug('ATTracker::setProperties', {
+			...propertiesObject,
+			persistent: options.persistent,
+		})
 	}
 
-	events = {
-		send(name: string, data: Record<string, unknown>): void {
-			console.debug('ATTracker::events.send', name, data)
-		},
+	sendEvent(name: string, data: Record<string, unknown>): void {
+		console.debug('ATTracker::sendEvent', name, data)
 	}
 
-	privacy: ATTracker['privacy'] = {
-		setVisitorMode(...args) {
-			console.debug('ATTracker::privacy.setVisitorMode', ...args)
+	consent: ATTracker['consent'] = {
+		setMode(...args) {
+			console.debug('ATTracker::consent.setMode', ...args)
 		},
-		setVisitorOptout() {
-			console.debug('ATTracker::setVisitorOptout')
-		},
-		getVisitorMode() {
-			console.debug('ATTracker::privacy.getVisitorMode')
+		getMode() {
+			console.debug('ATTracker::consent.getMode')
 
 			return { name: 'exempt' }
 		},
-	}
-
-	dispatch(): void {
-		console.debug('ATTracker::dispatch')
 	}
 }

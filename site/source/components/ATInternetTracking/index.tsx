@@ -80,7 +80,7 @@ export function TrackPage({
 	const { chapter1, chapter2, chapter3 } = useChapters(chapters)
 	const tag = useContext(TrackingContext)
 	useEffect(() => {
-		tag.events.send(
+		tag.sendEvent(
 			'page.display',
 			Object.fromEntries(
 				Object.entries({
